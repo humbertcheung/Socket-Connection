@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class ViewController: UIViewController {
 
@@ -18,6 +19,11 @@ class ViewController: UIViewController {
     
     var clientSocket: Int32?
     
+    let msgTextView = UITextView() // 文本输入框
+    
+    let sendBtn = UIButton() // 发送按钮
+
+    // MARK: - 生命周期方法
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,8 +35,42 @@ class ViewController: UIViewController {
         let result = sendAndReceive(by: request)
         
         print("返回的数据是: \(String(describing: result))")
+        
+        layoutUI()
     }
     
+    // MARK: - UI 布局
+    func layoutUI() {
+        msgTextView.backgroundColor = UIColor(red: 102/255.0, green: 205/255.0, blue: 170/255.0, alpha: 1.0)
+        msgTextView.textColor = .white
+        msgTextView.text = "GET / HTTP/1.1\n HOST:www.baidu.com\n\n"
+        sendBtn.setTitle("开始请求", for: .normal)
+        sendBtn.layer.cornerRadius = 5
+        sendBtn.backgroundColor = UIColor(red: 240/255.0, green: 128/255.0, blue: 128/255.0, alpha: 1.0)
+        sendBtn.setTitleColor(.white, for: .normal)
+        view.addSubview(msgTextView)
+        view.addSubview(sendBtn)
+        
+        msgTextView.snp.makeConstraints { (maker) in
+            let width = S_Width - 70
+            let height = S_Height / 3
+            maker.top.equalToSuperview().inset(100)
+            maker.centerX.equalToSuperview()
+            maker.width.equalTo(width)
+            maker.height.equalTo(height)
+        }
+        
+        sendBtn.snp.makeConstraints { (maker) in
+            maker.top.equalTo(msgTextView.snp.bottom).offset(35)
+            maker.centerX.equalToSuperview()
+            maker.width.equalToSuperview().multipliedBy(0.3)
+            maker.height.equalTo(30)
+        }
+    }
+    
+    // MARK: - socket 操作
+    
+    // 连接 socket 服务器
     func connetcion(with port: Int, and addr: __uint32_t) {
         
         /*------------------------ 1. 创建socket ------------------------*/
@@ -74,6 +114,7 @@ class ViewController: UIViewController {
         }
     }
     
+    // 发送和接收数据
     func sendAndReceive(by msg: String) -> String {
 
         /*------------------------ 3. 发送数据给服务器 ------------------------*/
